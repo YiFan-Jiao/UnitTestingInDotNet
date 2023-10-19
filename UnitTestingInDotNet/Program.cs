@@ -1,7 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using UnitTestingInDotNet.Data;
+using UnitTestingInDotNet.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<UnitTestingInDotNetContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UnitTestingInDotNetContext") ?? throw new InvalidOperationException("Connection string 'UnitTestingInDotNetContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped(typeof(IRepository<Vehicle>), typeof(VehicleRepo));
 
 var app = builder.Build();
 
@@ -22,6 +31,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Vehicles}/{action=Create}/{id?}");
 
 app.Run();
